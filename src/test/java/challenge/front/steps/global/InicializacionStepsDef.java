@@ -1,16 +1,12 @@
 package challenge.front.steps.global;
 
-import challenge.front.screenplay.global.abilities.Identificarse;
+import challenge.front.screenplay.global.tasks.Navegar;
 import io.cucumber.java.Before;
 import io.cucumber.java.es.Cuando;
-import io.cucumber.java.es.Dado;
-import net.serenitybdd.screenplay.actions.Open;
 import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
 
 import static net.serenitybdd.screenplay.actors.OnStage.theActorCalled;
-import static net.serenitybdd.screenplay.actors.OnStage.theActorInTheSpotlight;
-import static net.thucydides.core.webdriver.ThucydidesWebDriverSupport.getDriver;
 
 public class InicializacionStepsDef {
 
@@ -22,14 +18,9 @@ public class InicializacionStepsDef {
     //endregion
 
     //region Dado
-    @Dado("que el usuario tiene la habilidad de loguearse como {string}")
-    public void queElUsuarioTieneLaHabilidadDeLoguearseComo(String actor) {
-        theActorCalled(actor).can(Identificarse.como(actor));
-    }
-
-    @Cuando("^el usuario se encuentra en la página AliExpress")
-    public void elUsuarioSeEncuentraEnLaPaginaAliExpress() {
-        getDriver().get("https://www.aliexpress.com/");
+    @Cuando("^el (.*) se encuentra en la página Home$")
+    public void elUsuarioSeEncuentraEnLaPagina(String actor) {
+        theActorCalled(actor).attemptsTo(Navegar.hacia("pantalla login"));
     }
     //endregion
 }

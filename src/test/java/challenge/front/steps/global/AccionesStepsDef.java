@@ -1,62 +1,40 @@
 package challenge.front.steps.global;
 
 import io.cucumber.java.es.Cuando;
+import net.serenitybdd.screenplay.actions.Click;
+import net.serenitybdd.screenplay.actions.Enter;
+import net.serenitybdd.screenplay.actions.Scroll;
+import net.serenitybdd.screenplay.waits.WaitUntil;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.Select;
 
-import java.util.Set;
-
+import static net.serenitybdd.screenplay.actors.OnStage.theActorInTheSpotlight;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 import static net.thucydides.core.webdriver.ThucydidesWebDriverSupport.getDriver;
 
 public class AccionesStepsDef {
 
     //region Cuando
-    @Cuando("el usuario ingresa {string} en el campo de búsqueda y da enter")
-    public void elUsuarioIngresaEnElCampoDeBusquedaYDaEnter(String valor) {
-        getDriver().findElement(By.id("search-key")).sendKeys(valor);
-        getDriver().findElement(By.id("search-key")).sendKeys(Keys.ENTER);
+    @Cuando("el usuario hace click en el botón con el texto '(.*)'$")
+    public void elUsuarioHaceClickEnElBotonConElTexto(String texto) {
+        theActorInTheSpotlight().attemptsTo(Click.on("//button[text()='" + texto + "']|//span[text()='" + texto + "']"));
     }
 
-    @Cuando("el usuario scrollea hasta el final de la página")
-    public void elUsuarioScrolleaHastaElFinalDeLaPagina() {
-        ((JavascriptExecutor) getDriver())
-                .executeScript("window.scrollTo(0, document.body.scrollHeight)");
+    @Cuando("el usuario ingresa '(.*)' en el campo '(.*)'$")
+    public void elUsuarioIngresaStringEnElCampo(String texto, String campo) {
+        theActorInTheSpotlight().attemptsTo(WaitUntil.the("//*[@id='" + campo + "']", isVisible()).forNoMoreThan(30).seconds());
+        theActorInTheSpotlight().attemptsTo(Enter.theValue(texto).into("//*[@id='" + campo + "']"));
     }
 
-    @Cuando("el usuario hace click en el botón de la segunda página")
-    public void elUsuarioHaceClickEnElBotonDeLaSegundaPagina() {
-        getDriver().findElement(By.xpath("//div[@class='list-pagination']//button[text()='2']")).click();
+    @Cuando("el usuario hace click en el combo '(.*)' y selecciona la opción '(.*)'$")
+    public void elUsuarioHaceClickEnElYSeleccionaLaOpcion(String combo, String opcion) {
+        theActorInTheSpotlight().attemptsTo(WaitUntil.the("//*[@id='" + combo + "']", isVisible()).forNoMoreThan(30).seconds());
+        new Select(getDriver().findElement(By.id("" + combo + ""))).selectByVisibleText(opcion);
     }
 
-    @Cuando("el usuario hace click en la tarjeta del segundo producto")
-    public void elUsuarioHaceClickEnLaTarjetaDelSegundoProducto() {
-        getDriver().findElement(By.xpath("//div[@class='product-container']/div[2]/a[2]")).click();
-    }
-
-    @Cuando("el usuario cambia a la nueva ventana")
-    public void elUsuarioCambiaALaNuevaVentana() {
-        WebDriver driver = getDriver();
-
-        String actual = driver.getWindowHandle();
-        Set<String> ventanas = driver.getWindowHandles();
-
-        for (String ventana : ventanas) {
-            if (!ventana.contentEquals(actual)) {
-                driver.switchTo().window(ventana);
-                break;
-            }
-        }
-    }
-
-    @Cuando("^el usuario espera '(.*)' (?:segundo|segundos)$")
-    public void elUsuarioEspera(Integer segundos) {
-        try {
-            Thread.sleep(segundos * 1000L);
-        } catch (Exception e) {
-            //tiempo de espera
-        }
+    @Cuando("el usuario scrollea hasta el elemento '(.*)'$")
+    public void elUsuarioScrolleaHastaElElemento(String texto) {
+        theActorInTheSpotlight().attemptsTo(Scroll.to(By.xpath("//span[text()='" + texto + "']")));
     }
     //endregion
 }
